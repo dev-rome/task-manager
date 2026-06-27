@@ -31,3 +31,66 @@ export async function GET(
     );
   }
 }
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(id)) {
+    return NextResponse.json(
+      { ok: false, error: "Invalid task id" },
+      { status: 400 },
+    );
+  }
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "Invalid JSON in request body" },
+      { status: 400 },
+    );
+  }
+  const ALLOWED = ["title", "description", "status", "priority"];
+  // keep only allowlisted fields the client actually sent
+  const fields = Object.keys(body).filter((key) => ALLOWED.includes(key));
+  if (fields.length === 0) {
+    return NextResponse.json(
+      { ok: false, error: "No valid fields to update" },
+      { status: 400 },
+    );
+  }
+  try {
+    // each fragment: `status = $n` — column raw (trusted), value parameterized (safe)
+    const updates = fields.map(
+      (field) => sql`${sql.unsafe(field)} = ${body[field]}`,
+    );
+    // compose fragments into one, comma-separated — composition renumbers placeholders
+    let setClause = updates[0];
+    for (let i = 1; i < updates.length; i++) {
+      setClause = sql`${setClause}, ${updates[i]}`;
+    }
+    const [task] = await sql`
+      UPDATE tasks
+      SET ${setClause}, updated_at = now()
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    if (!task) {
+      return NextResponse.json(
+        { ok: false, error: "Task not found" },
+        { status: 404 },
+      );
+    }
+    return NextResponse.json({ ok: true, task }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to update task", error);
+    return NextResponse.json(
+      { ok: false, error: "Something went wrong" },
+      { status: 500 },
+    );
+  }
+}
