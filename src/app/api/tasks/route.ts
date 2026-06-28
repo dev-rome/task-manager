@@ -1,28 +1,18 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 
 export async function GET() {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json(
-      { ok: false, error: "Authentication required" },
-      { status: 401 },
-    );
-  }
+  const { user, response } = await requireUser();
+  if (response) return response;
   const tasks =
     await sql`SELECT * FROM tasks WHERE user_id = ${user.id} ORDER BY created_at DESC`;
   return NextResponse.json({ ok: true, tasks });
 }
 
 export async function POST(request: Request) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json(
-      { ok: false, error: "Authentication required" },
-      { status: 401 },
-    );
-  }
+  const { user, response } = await requireUser();
+  if (response) return response;
   // 1. Parse the body — can throw if the JSON is malformed (client's fault → 400)
   let body;
   try {
