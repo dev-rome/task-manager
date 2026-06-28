@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
+import { randomBytes } from "crypto";
 import { cookies } from "next/headers";
 
 export async function getCurrentUser() {
@@ -30,4 +31,30 @@ export async function requireUser() {
     };
   }
   return { user, response: null };
+}
+
+export function generateSessionToken() {
+  return randomBytes(32).toString("hex");
+}
+
+export function buildExpiry() {
+  return new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+}
+
+export async function setSessionCookie(token: string) {
+  const cookieStore = await cookies();
+  cookieStore.set("session", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7,
+    path: "/",
+  });
+}
+
+// full helper for the simple (non-transactional) case — login uses this
+export async function createSession(userId: string) {
+  const token = generateSessionToken();
+  await sql`INSERT INTO sessions (id, user_id, expires_at) VALUES (${token}, ${userId}, ${buildExpiry()})`;
+  await setSessionCookie(token);
 }

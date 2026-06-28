@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { randomBytes, randomUUID } from "crypto";
-import { cookies } from "next/headers";
+import {
+  buildExpiry,
+  setSessionCookie,
+  generateSessionToken,
+} from "@/lib/auth";
+import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
@@ -31,22 +35,12 @@ export async function POST(request: Request) {
     // hashing at signup (await — it's deliberately slow, so it's async)
     const passwordHash = await bcrypt.hash(password, 12); // 12 = cost factor
     const userId = randomUUID();
-    const token = randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+    const token = generateSessionToken();
     await sql.transaction([
-      sql`INSERT INTO users (id, email, password_hash)
-        VALUES (${userId}, ${email}, ${passwordHash})`,
-      sql`INSERT INTO sessions (id, user_id, expires_at)
-        VALUES (${token}, ${userId}, ${expiresAt})`,
+      sql`INSERT INTO users (id, email, password_hash) VALUES (${userId}, ${email}, ${passwordHash})`,
+      sql`INSERT INTO sessions (id, user_id, expires_at) VALUES (${token}, ${userId}, ${buildExpiry()})`,
     ]);
-    const cookieStore = await cookies();
-    cookieStore.set("session", token, {
-      httpOnly: true, // JS can't read it → safe from XSS theft
-      secure: process.env.NODE_ENV === "production", // HTTPS-only in prod
-      sameSite: "lax", // sent on normal navigation, mitigates CSRF
-      maxAge: 60 * 60 * 24 * 7, // 7 days, matches the session expiry
-      path: "/", // sent on every route
-    });
+    await setSessionCookie(token);
     return NextResponse.json(
       { ok: true, user: { id: userId, email } },
       { status: 201 },

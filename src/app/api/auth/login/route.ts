@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { randomBytes } from "crypto";
-import { cookies } from "next/headers";
+import { createSession } from "@/lib/auth";
 import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
@@ -44,20 +43,7 @@ export async function POST(request: Request) {
         { status: 401 },
       );
     }
-    const token = randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
-    await sql`
-        INSERT INTO sessions (id, user_id, expires_at)
-        VALUES (${token}, ${user.id}, ${expiresAt})
-    `;
-    const cookieStore = await cookies();
-    cookieStore.set("session", token, {
-      httpOnly: true, // JS can't read it → safe from XSS theft
-      secure: process.env.NODE_ENV === "production", // HTTPS-only in prod
-      sameSite: "lax", // sent on normal navigation, mitigates CSRF
-      maxAge: 60 * 60 * 24 * 7, // 7 days, matches the session expiry
-      path: "/", // sent on every route
-    });
+    await createSession(user.id);
     return NextResponse.json(
       { ok: true, user: { id: user.id, email } },
       { status: 200 },
