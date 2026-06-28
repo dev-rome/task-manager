@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
+import { isValidUuid } from "@/lib/validation";
 
 export async function GET(
   _request: Request,
@@ -9,9 +10,7 @@ export async function GET(
   const { user, response } = await requireUser();
   if (response) return response;
   const { id } = await params;
-  const UUID_RE =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!UUID_RE.test(id)) {
+  if (!isValidUuid(id)) {
     return NextResponse.json(
       { ok: false, error: "Invalid task id" },
       { status: 400 },
@@ -43,9 +42,7 @@ export async function PATCH(
   const { user, response } = await requireUser();
   if (response) return response;
   const { id } = await params;
-  const UUID_RE =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!UUID_RE.test(id)) {
+  if (!isValidUuid(id)) {
     return NextResponse.json(
       { ok: false, error: "Invalid task id" },
       { status: 400 },
@@ -108,9 +105,7 @@ export async function DELETE(
   const { user, response } = await requireUser();
   if (response) return response;
   const { id } = await params;
-  const UUID_RE =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!UUID_RE.test(id)) {
+  if (!isValidUuid(id)) {
     return NextResponse.json(
       { ok: false, error: "Invalid task id" },
       { status: 400 },
