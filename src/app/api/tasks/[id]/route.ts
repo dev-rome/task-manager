@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json(
+      { ok: false, error: "Authentication required" },
+      { status: 401 },
+    );
+  }
   const { id } = await params;
   const UUID_RE =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -15,7 +23,8 @@ export async function GET(
     );
   }
   try {
-    const [task] = await sql`SELECT * FROM tasks WHERE id = ${id}`;
+    const [task] =
+      await sql`SELECT * FROM tasks WHERE id = ${id} AND user_id = ${user.id}`;
     if (!task) {
       return NextResponse.json(
         { ok: false, error: "Task not found" },
@@ -36,6 +45,13 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json(
+      { ok: false, error: "Authentication required" },
+      { status: 401 },
+    );
+  }
   const { id } = await params;
   const UUID_RE =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -76,7 +92,7 @@ export async function PATCH(
     const [task] = await sql`
       UPDATE tasks
       SET ${setClause}, updated_at = now()
-      WHERE id = ${id}
+      WHERE id = ${id} AND user_id = ${user.id}
       RETURNING *
     `;
     if (!task) {
@@ -99,6 +115,13 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json(
+      { ok: false, error: "Authentication required" },
+      { status: 401 },
+    );
+  }
   const { id } = await params;
   const UUID_RE =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -109,7 +132,8 @@ export async function DELETE(
     );
   }
   try {
-    const [task] = await sql`DELETE FROM tasks WHERE id = ${id} RETURNING *`;
+    const [task] =
+      await sql`DELETE FROM tasks WHERE id = ${id} AND user_id = ${user.id} RETURNING *`;
     if (!task) {
       return NextResponse.json(
         { ok: false, error: "Task not found" },
