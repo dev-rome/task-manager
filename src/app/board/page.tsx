@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTasksForUser } from "@/lib/tasks";
+import LogoutButton from "@/components/LogoutButton";
 
 const columns = [
   { key: "todo", label: "Todo", dot: "var(--color-todo)" },
@@ -21,6 +22,7 @@ export default async function BoardPage() {
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <h1 className="text-xl font-medium">My tasks</h1>
           <div className="flex items-center gap-3">
+            <LogoutButton />
             <button className="rounded-md border border-muted/30 px-3 py-2 text-sm text-muted">
               Theme
             </button>
