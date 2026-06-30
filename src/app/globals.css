@@ -8,9 +8,15 @@
   --color-todo: #49c4e5;
   --color-progress: #8471f2;
   --color-done: #67e2ae;
-  --color-error: #EA5555;
+  --color-error: #ea5555;
 }
 
 body {
   background-color: var(--color-board);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button {
+    cursor: pointer;
+  }
 }
