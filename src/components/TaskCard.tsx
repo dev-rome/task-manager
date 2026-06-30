@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Task } from "@/lib/tasks";
+import EditTaskModal from "@/components/EditTaskModal";
 
 export default function TaskCard({ task }: { task: Task }) {
   const [isCompleting, setIsCompleting] = useState(false);
@@ -58,6 +59,7 @@ export default function TaskCard({ task }: { task: Task }) {
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted capitalize">{task.priority}</span>
         <div className="flex items-center gap-2">
+          <EditTaskModal task={task} />
           {task.status !== "done" && (
             <button
               className="text-xs text-muted hover:text-white"
