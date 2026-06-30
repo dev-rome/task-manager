@@ -2,35 +2,40 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTasksForUser } from "@/lib/tasks";
 
+const columns = [
+  { key: "todo", label: "Todo", dot: "var(--color-todo)" },
+  { key: "in_progress", label: "In progress", dot: "var(--color-progress)" },
+  { key: "done", label: "Done", dot: "var(--color-done)" },
+];
+
 export default async function BoardPage() {
   const user = await getCurrentUser();
-  if (!user) return redirect("/login");
+  if (!user) redirect("/login");
 
   const tasks = await getTasksForUser(user.id);
 
-  const columns = [
-    { key: "todo", label: "Todo", dot: "#49c4e5" },
-    { key: "in_progress", label: "In progress", dot: "#8471f2" },
-    { key: "done", label: "Done", dot: "#67e2ae" },
-  ];
-
   return (
-    <div className="flex min-h-screen bg-[#20212c] text-white">
-      {/* optional sidebar here later */}
-      <main className="flex-1 p-6">
-        <header className="flex items-center justify-between mb-8">
-          <h1 className="text-lg font-medium">My tasks</h1>
-          <button className="bg-[#635fc7] rounded-full px-4 py-2 text-sm font-medium">
-            + Add new task
-          </button>
+    <div className="min-h-screen bg-board text-white">
+      <main className="p-4 sm:p-6">
+        {/* header */}
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+          <h1 className="text-xl font-medium">My tasks</h1>
+          <div className="flex items-center gap-3">
+            <button className="rounded-md border border-muted/30 px-3 py-2 text-sm text-muted">
+              Theme
+            </button>
+            <button className="bg-accent rounded-full px-4 py-2 text-sm font-medium">
+              + Add new task
+            </button>
+          </div>
         </header>
-
-        <div className="flex gap-5">
+        {/* columns: stacked on mobile, side-by-side from md up */}
+        <div className="flex flex-col md:flex-row gap-5">
           {columns.map((col) => {
             const colTasks = tasks.filter((t) => t.status === col.key);
             return (
-              <section key={col.key} className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-5 text-xs uppercase tracking-wider text-[#828fa3]">
+              <section key={col.key} className="w-full md:flex-1 md:min-w-0">
+                <div className="flex items-center gap-2 mb-5 text-xs uppercase tracking-wider text-muted">
                   <span
                     className="w-3 h-3 rounded-full"
                     style={{ background: col.dot }}
@@ -40,14 +45,19 @@ export default async function BoardPage() {
                 {colTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="bg-[#2b2c37] rounded-lg p-4 mb-3.5"
+                    className="bg-surface rounded-lg p-4 mb-3.5"
                   >
                     <div className="text-sm font-medium mb-2">{task.title}</div>
-                    <span className="text-xs text-[#828fa3] capitalize">
+                    <span className="text-xs text-muted capitalize">
                       {task.priority}
                     </span>
                   </div>
                 ))}
+                {colTasks.length === 0 && (
+                  <div className="rounded-lg border border-dashed border-muted/30 p-6 text-center text-sm text-muted">
+                    No tasks
+                  </div>
+                )}
               </section>
             );
           })}
