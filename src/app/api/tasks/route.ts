@@ -24,25 +24,33 @@ export async function POST(request: Request) {
     );
   }
   // 2. Validate the input at the boundary (client's fault → 400)
-  const { title, description } = body;
+  const { title, description, priority } = body;
   if (!title || typeof title !== "string" || title.trim() === "") {
     return NextResponse.json(
       { ok: false, error: "Title is required" },
       { status: 400 },
     );
   }
-  // 3. Insert — past every guard, so any failure here is the server's fault → 500
+  // 3. Validate priority
+  const ALLOWED_PRIORITIES = ["low", "medium", "high"];
+  if (priority !== undefined && !ALLOWED_PRIORITIES.includes(priority)) {
+    return NextResponse.json(
+      { ok: false, error: "Invalid priority" },
+      { status: 400 },
+    );
+  }
+  // 4. Insert — past every guard, so any failure here is the server's fault → 500
   try {
     const [task] = await sql`
-    INSERT INTO tasks (user_id, title, description)
-    VALUES (${user.id}, ${title}, ${description})
+    INSERT INTO tasks (user_id, title, description, priority)
+    VALUES (${user.id}, ${title}, ${description}, ${priority || "medium"})
     RETURNING *
   `;
     return NextResponse.json({ ok: true, task }, { status: 201 });
   } catch (error) {
-    console.error("Failed to insert task:", error); // log the real error server-side
+    console.error("Failed to insert task:", error);
     return NextResponse.json(
-      { ok: false, error: "Something went wrong" }, // generic message to the client
+      { ok: false, error: "Something went wrong" },
       { status: 500 },
     );
   }
