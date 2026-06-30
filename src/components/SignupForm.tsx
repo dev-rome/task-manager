@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LoginForm() {
+export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,16 +13,20 @@ export default function LoginForm() {
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
     setIsLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "Signup failed");
         return;
       }
       router.push("/board");
@@ -58,6 +62,7 @@ export default function LoginForm() {
           placeholder="********"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          minLength={8}
           required
         />
       </div>
@@ -67,7 +72,7 @@ export default function LoginForm() {
         type="submit"
         disabled={isLoading}
       >
-        {isLoading ? "Signing in..." : "Submit"}
+        {isLoading ? "Creating account..." : "Sign up"}
       </button>
     </form>
   );
