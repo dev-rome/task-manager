@@ -5,3 +5,7 @@ const UUID_RE =
 export function isValidUuid(id: string): boolean {
   return UUID_RE.test(id);
 }
+
+export function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}

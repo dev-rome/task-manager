@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { createSession } from "@/lib/auth";
+import { normalizeEmail } from "@/lib/validation";
 import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
@@ -26,10 +27,10 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-
+  const cleanEmail = normalizeEmail(email);
   try {
     const [user] =
-      await sql`SELECT id, password_hash FROM users WHERE email = ${email}`;
+      await sql`SELECT id, password_hash FROM users WHERE email = ${cleanEmail}`;
     if (!user) {
       return NextResponse.json(
         { ok: false, error: "Invalid email or password" },
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
     }
     await createSession(user.id);
     return NextResponse.json(
-      { ok: true, user: { id: user.id, email } },
+      { ok: true, user: { id: user.id, email: cleanEmail } },
       { status: 200 },
     );
   } catch (error) {

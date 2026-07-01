@@ -5,6 +5,7 @@ import {
   setSessionCookie,
   generateSessionToken,
 } from "@/lib/auth";
+import { normalizeEmail } from "@/lib/validation";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 
@@ -31,18 +32,19 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  const cleanEmail = normalizeEmail(email)
   try {
     // hashing at signup (await — it's deliberately slow, so it's async)
     const passwordHash = await bcrypt.hash(password, 12); // 12 = cost factor
     const userId = randomUUID();
     const token = generateSessionToken();
     await sql.transaction([
-      sql`INSERT INTO users (id, email, password_hash) VALUES (${userId}, ${email}, ${passwordHash})`,
+      sql`INSERT INTO users (id, email, password_hash) VALUES (${userId}, ${cleanEmail}, ${passwordHash})`,
       sql`INSERT INTO sessions (id, user_id, expires_at) VALUES (${token}, ${userId}, ${buildExpiry()})`,
     ]);
     await setSessionCookie(token);
     return NextResponse.json(
-      { ok: true, user: { id: userId, email } },
+      { ok: true, user: { id: userId, email: cleanEmail } },
       { status: 201 },
     );
   } catch (error) {
