@@ -41,7 +41,7 @@ export default function AddTaskModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="bg-accent rounded-full px-4 py-2 text-sm font-medium"
+        className="bg-accent rounded-full px-4 py-2 text-sm font-medium text-white"
       >
         + Add new task
       </button>

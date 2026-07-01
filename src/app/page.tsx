@@ -17,7 +17,7 @@ export default async function HomePage() {
         <div className="flex items-center justify-center gap-4">
           <Link
             href="/login"
-            className="bg-accent rounded-full px-6 py-2 text-sm font-medium"
+            className="bg-accent rounded-full px-6 py-2 text-sm font-medium text-white"
           >
             Log in
           </Link>

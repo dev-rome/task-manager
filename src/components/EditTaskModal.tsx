@@ -102,7 +102,7 @@ export default function EditTaskModal({ task }: { task: Task }) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="bg-accent w-fit px-3 py-1 rounded-sm"
+                className="bg-accent w-fit px-3 py-1 rounded-sm text-white"
               >
                 {isLoading ? "Saving..." : "Save changes"}
               </button>

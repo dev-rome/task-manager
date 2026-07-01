@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getTasksForUser } from "@/lib/tasks";
 import LogoutButton from "@/components/LogoutButton";
+import ThemeToggle from "@/components/ThemeToggle";
 import AddTaskModal from "@/components/AddTaskModal";
 import TaskCard from "@/components/TaskCard";
 
@@ -24,9 +25,7 @@ export default async function BoardPage() {
           <h1 className="text-xl font-medium">My tasks</h1>
           <div className="flex items-center gap-3">
             <LogoutButton />
-            <button className="rounded-md border border-muted/30 px-3 py-2 text-sm text-muted">
-              Theme
-            </button>
+            <ThemeToggle />
             <AddTaskModal />
           </div>
         </header>

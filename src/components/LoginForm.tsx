@@ -63,7 +63,7 @@ export default function LoginForm() {
       </div>
       {error && <p className="text-error text-xs">{error}</p>}
       <button
-        className="bg-accent w-fit px-3 py-1 rounded-sm"
+        className="bg-accent w-fit px-3 py-1 rounded-sm text-white"
         type="submit"
         disabled={isLoading}
       >
