@@ -45,8 +45,8 @@ export default async function BoardPage() {
                   <TaskCard key={task.id} task={task} />
                 ))}
                 {colTasks.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-muted/30 p-6 text-center text-sm text-muted">
-                    No tasks
+                  <div className="rounded-lg border-2 border-dashed border-muted/20 p-8 text-center">
+                    <p className="text-sm text-muted">No tasks yet</p>
                   </div>
                 )}
               </section>

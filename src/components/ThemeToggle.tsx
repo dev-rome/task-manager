@@ -1,24 +1,28 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
-  // until mounted, render a stable placeholder (matches server output)
   if (!mounted) {
-    return <button className="text-sm text-muted">Theme</button>;
+    return <div className="w-5 h-5" />;
   }
 
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="text-sm text-muted hover:text-ink"
+      aria-label="Toggle theme"
+      className="text-muted hover:text-ink transition-colors"
     >
-      {theme === "dark" ? "Light" : "Dark"}
+      {theme === "dark" ? (
+        <Sun className="w-5 h-5" />
+      ) : (
+        <Moon className="w-5 h-5" />
+      )}
     </button>
   );
 }
