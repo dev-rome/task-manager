@@ -9,10 +9,13 @@
   --color-progress: #8471f2;
   --color-done: #67e2ae;
   --color-error: #ea5555;
+
+  --font-sans: var(--font-sans);
 }
 
 body {
   background-color: var(--color-board);
+  font-family: var(--font-sans), sans-serif;
 }
 
 @media (hover: hover) and (pointer: fine) {
