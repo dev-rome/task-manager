@@ -18,7 +18,7 @@ export default async function BoardPage() {
   const tasks = await getTasksForUser(user.id);
 
   return (
-    <div className="min-h-screen bg-board text-white">
+    <div className="min-h-screen bg-board text-ink">
       <main className="p-4 sm:p-6">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <h1 className="text-xl font-medium">My tasks</h1>

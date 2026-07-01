@@ -7,7 +7,7 @@ export default async function HomePage() {
   if (user) redirect("/board");
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-board text-white p-6">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-board text-ink p-6">
       <div className="max-w-md text-center">
         <h1 className="text-4xl font-medium mb-4">Kanban</h1>
         <p className="text-muted mb-8">
@@ -23,7 +23,7 @@ export default async function HomePage() {
           </Link>
           <Link
             href="/signup"
-            className="border border-muted/40 rounded-full px-6 py-2 text-sm font-medium hover:border-white"
+            className="border border-muted/40 rounded-full px-6 py-2 text-sm font-medium hover:border-ink"
           >
             Sign up
           </Link>

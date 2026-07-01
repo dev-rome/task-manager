@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   --color-board: #20212c;
   --color-surface: #2b2c37;
@@ -9,8 +11,17 @@
   --color-progress: #8471f2;
   --color-done: #67e2ae;
   --color-error: #ea5555;
+  --color-ink: #ffffff;
+}
 
-  --font-sans: var(--font-sans);
+[data-theme="light"] {
+  --color-board: #f4f7fd;
+  --color-surface: #ffffff;
+  --color-muted: #828fa3;
+  --color-todo: #49c4e5;
+  --color-progress: #8471f2;
+  --color-done: #67e2ae;
+  --color-ink: #1a1a1a;
 }
 
 body {

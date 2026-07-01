@@ -40,7 +40,7 @@ export default function EditTaskModal({ task }: { task: Task }) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="text-xs text-muted hover:text-white"
+        className="text-xs text-muted hover:text-ink"
       >
         Edit
       </button>

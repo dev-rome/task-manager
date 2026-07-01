@@ -62,7 +62,7 @@ export default function TaskCard({ task }: { task: Task }) {
           <EditTaskModal task={task} />
           {task.status !== "done" && (
             <button
-              className="text-xs text-muted hover:text-white"
+              className="text-xs text-muted hover:text-ink"
               onClick={handleComplete}
               disabled={isCompleting}
             >
