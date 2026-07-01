@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { isValidUuid } from "@/lib/validation";
+import { isValidUuid, isValidPriority, isValidStatus } from "@/lib/validation";
 
 export async function GET(
   _request: Request,
@@ -68,18 +68,13 @@ export async function PATCH(
       { status: 400 },
     );
   }
-  const ALLOWED_STATUSES = ["todo", "in_progress", "done"];
-  const ALLOWED_PRIORITIES = ["low", "medium", "high"];
-  if (body.status !== undefined && !ALLOWED_STATUSES.includes(body.status)) {
+  if (body.status !== undefined && !isValidStatus(body.status)) {
     return NextResponse.json(
       { ok: false, error: "Invalid status" },
       { status: 400 },
     );
   }
-  if (
-    body.priority !== undefined &&
-    !ALLOWED_PRIORITIES.includes(body.priority)
-  ) {
+  if (body.priority !== undefined && !isValidPriority(body.priority)) {
     return NextResponse.json(
       { ok: false, error: "Invalid priority" },
       { status: 400 },

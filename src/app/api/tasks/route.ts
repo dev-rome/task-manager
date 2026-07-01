@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getTasksForUser } from "@/lib/tasks";
+import { isValidPriority } from "@/lib/validation";
 
 export async function GET() {
   const { user, response } = await requireUser();
@@ -41,8 +42,7 @@ export async function POST(request: Request) {
   }
 
   // 4. Validate priority
-  const ALLOWED_PRIORITIES = ["low", "medium", "high"];
-  if (priority !== undefined && !ALLOWED_PRIORITIES.includes(priority)) {
+  if (priority !== undefined && !isValidPriority(priority)) {
     return NextResponse.json(
       { ok: false, error: "Invalid priority" },
       { status: 400 },

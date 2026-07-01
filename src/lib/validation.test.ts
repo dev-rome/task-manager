@@ -1,5 +1,10 @@
 import { describe, test, expect } from "vitest";
-import { isValidUuid, normalizeEmail } from "./validation";
+import {
+  isValidUuid,
+  normalizeEmail,
+  isValidPriority,
+  isValidStatus,
+} from "./validation";
 
 describe("isValidUuid", () => {
   test("returns true for a valid UUID", () => {
@@ -31,5 +36,36 @@ describe("normalizeEmail", () => {
   });
   test("clean input already unchanged", () => {
     expect(normalizeEmail("test@example.com")).toBe("test@example.com");
+  });
+});
+
+describe("isValidPriority", () => {
+  test("returns true for valid priorities", () => {
+    expect(isValidPriority("low")).toBe(true);
+    expect(isValidPriority("medium")).toBe(true);
+    expect(isValidPriority("high")).toBe(true);
+  });
+  test("returns false for an invalid priority string", () => {
+    expect(isValidPriority("urgent")).toBe(false);
+  });
+  test("returns false for a non-string value", () => {
+    expect(isValidPriority(42)).toBe(false);
+    expect(isValidPriority(null)).toBe(false);
+    expect(isValidPriority(undefined)).toBe(false);
+  });
+});
+
+describe("isValidStatus", () => {
+  test("returns true for valid statuses", () => {
+    expect(isValidStatus("todo")).toBe(true);
+    expect(isValidStatus("in_progress")).toBe(true);
+    expect(isValidStatus("done")).toBe(true);
+  });
+  test("returns false for an invalid status string", () => {
+    expect(isValidStatus("archived")).toBe(false);
+  });
+  test("returns false for a non-string value", () => {
+    expect(isValidStatus(42)).toBe(false);
+    expect(isValidStatus(null)).toBe(false);
   });
 });

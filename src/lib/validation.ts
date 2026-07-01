@@ -9,3 +9,14 @@ export function isValidUuid(id: string): boolean {
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
+
+const ALLOWED_PRIORITIES = ["low", "medium", "high"];
+const ALLOWED_STATUSES = ["todo", "in_progress", "done"];
+
+export function isValidPriority(value: unknown): boolean {
+  return typeof value === "string" && ALLOWED_PRIORITIES.includes(value);
+}
+
+export function isValidStatus(value: unknown): boolean {
+  return typeof value === "string" && ALLOWED_STATUSES.includes(value);
+}
