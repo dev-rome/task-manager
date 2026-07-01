@@ -7,9 +7,9 @@ import AddTaskModal from "@/components/AddTaskModal";
 import TaskCard from "@/components/TaskCard";
 
 const columns = [
-  { key: "todo", label: "Todo", dot: "var(--color-todo)" },
-  { key: "in_progress", label: "In progress", dot: "var(--color-progress)" },
-  { key: "done", label: "Done", dot: "var(--color-done)" },
+  { key: "todo", label: "Todo", dot: "bg-todo" },
+  { key: "in_progress", label: "In progress", dot: "bg-progress" },
+  { key: "done", label: "Done", dot: "bg-done" },
 ];
 
 export default async function BoardPage() {
@@ -35,10 +35,7 @@ export default async function BoardPage() {
             return (
               <section key={col.key} className="w-full md:flex-1 md:min-w-0">
                 <div className="flex items-center gap-2 mb-5 text-xs uppercase tracking-wider text-muted">
-                  <span
-                    className="w-3 h-3 rounded-full"
-                    style={{ background: col.dot }}
-                  />
+                  <span className={`w-3 h-3 rounded-full ${col.dot}`} />
                   {col.label} ({colTasks.length})
                 </div>
                 {colTasks.map((task) => (

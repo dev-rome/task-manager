@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Task } from "@/lib/tasks";
+import { Trash2, Check } from "lucide-react";
 import EditTaskModal from "@/components/EditTaskModal";
 
 const priorityStyles: Record<string, string> = {
@@ -82,19 +83,7 @@ export default function TaskCard({ task }: { task: Task }) {
             aria-label="Completed"
             className="w-5 h-5 rounded-full bg-accent flex items-center justify-center shrink-0"
           >
-            <svg
-              viewBox="0 0 24 24"
-              className="w-3 h-3"
-              fill="none"
-              stroke="white"
-              strokeWidth="3"
-            >
-              <path
-                d="M5 13l4 4L19 7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Check className="w-3 h-3 text-white" strokeWidth={3} />
           </span>
         )}
         <div className="flex items-center gap-3">
@@ -105,19 +94,7 @@ export default function TaskCard({ task }: { task: Task }) {
             aria-label="Delete task"
             className="text-muted hover:text-red-400 transition-colors shrink-0"
           >
-            <svg
-              viewBox="0 0 24 24"
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H7a1 1 0 01-1-1V6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </div>
