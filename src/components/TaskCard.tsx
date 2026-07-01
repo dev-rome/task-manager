@@ -63,6 +63,11 @@ export default function TaskCard({ task }: { task: Task }) {
   return (
     <div className="bg-surface rounded-lg p-4 mb-3.5 hover:shadow-lg transition-shadow group">
       <div className="text-sm font-medium mb-3">{task.title}</div>
+      {task.description && (
+        <p className="text-xs text-muted mb-3 line-clamp-2">
+          {task.description}
+        </p>
+      )}
       <div className="mb-3">
         <span
           className={`text-xs px-2 py-0.5 rounded-full capitalize ${priorityStyles[task.priority]}`}

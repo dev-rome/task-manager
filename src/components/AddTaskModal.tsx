@@ -1,11 +1,11 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AddTaskModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState(""); // ← 1. ADD state
   const [priority, setPriority] = useState("medium");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function AddTaskModal() {
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, priority }),
+        body: JSON.stringify({ title, description, priority }), // ← 2. ADD description
       });
       const data = await res.json();
       if (!res.ok) {
@@ -28,6 +28,7 @@ export default function AddTaskModal() {
       }
       setIsOpen(false);
       setTitle("");
+      setDescription(""); // ← reset it too, so next open is clean
       setPriority("medium");
       router.refresh();
     } catch {
@@ -70,6 +71,22 @@ export default function AddTaskModal() {
                   required
                 />
               </div>
+
+              {/* ← 3. ADD the description textarea, between title and priority */}
+              <div className="flex flex-col gap-2">
+                <label htmlFor="description" className="text-sm text-muted">
+                  Description <span className="text-muted/60">(optional)</span>
+                </label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Add more detail..."
+                  rows={3}
+                  className="bg-board rounded px-3 py-2 text-sm resize-none"
+                />
+              </div>
+
               <div className="flex flex-col gap-2">
                 <label htmlFor="priority" className="text-sm text-muted">
                   Priority
@@ -85,9 +102,10 @@ export default function AddTaskModal() {
                   <option value="high">High</option>
                 </select>
               </div>
+
               {error && <p className="text-error text-xs">{error}</p>}
               <button
-                className="bg-accent w-fit px-3 py-1 rounded-sm"
+                className="bg-accent w-fit px-3 py-1 rounded-sm text-white"
                 type="submit"
                 disabled={isLoading}
               >
