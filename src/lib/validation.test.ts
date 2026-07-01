@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { isValidUuid } from "./validation";
+import { isValidUuid, normalizeEmail } from "./validation";
 
 describe("isValidUuid", () => {
   test("returns true for a valid UUID", () => {
@@ -16,5 +16,20 @@ describe("isValidUuid", () => {
   });
   test("returns false for a UUID with wrong format", () => {
     expect(isValidUuid("94437ed9-5775-43b3-a26d")).toBe(false);
+  });
+});
+
+describe("normalizeEmail", () => {
+  test("converts email to lowercase", () => {
+    expect(normalizeEmail("TEST@EXAMPLE.COM")).toBe("test@example.com");
+  });
+  test("trims whitespaces", () => {
+    expect(normalizeEmail("  test@example.com  ")).toBe("test@example.com");
+  });
+  test("trims whitespace and converts the email to lowercase", () => {
+    expect(normalizeEmail("  TEST@EXAMPLE.COM  ")).toBe("test@example.com");
+  });
+  test("clean input already unchanged", () => {
+    expect(normalizeEmail("test@example.com")).toBe("test@example.com");
   });
 });
