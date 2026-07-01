@@ -57,12 +57,31 @@ export async function PATCH(
       { status: 400 },
     );
   }
-  const ALLOWED = ["title", "description", "status", "priority"];
+  const ALLOWED_FIELDS = ["title", "description", "status", "priority"];
   // keep only allowlisted fields the client actually sent
-  const fields = Object.keys(body).filter((key) => ALLOWED.includes(key));
+  const fields = Object.keys(body).filter((key) =>
+    ALLOWED_FIELDS.includes(key),
+  );
   if (fields.length === 0) {
     return NextResponse.json(
       { ok: false, error: "No valid fields to update" },
+      { status: 400 },
+    );
+  }
+  const ALLOWED_STATUSES = ["todo", "in_progress", "done"];
+  const ALLOWED_PRIORITIES = ["low", "medium", "high"];
+  if (body.status !== undefined && !ALLOWED_STATUSES.includes(body.status)) {
+    return NextResponse.json(
+      { ok: false, error: "Invalid status" },
+      { status: 400 },
+    );
+  }
+  if (
+    body.priority !== undefined &&
+    !ALLOWED_PRIORITIES.includes(body.priority)
+  ) {
+    return NextResponse.json(
+      { ok: false, error: "Invalid priority" },
       { status: 400 },
     );
   }
