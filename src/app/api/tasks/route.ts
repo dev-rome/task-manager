@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
+import { getTasksForUser } from "@/lib/tasks";
 
 export async function GET() {
   const { user, response } = await requireUser();
   if (response) return response;
-  const tasks =
-    await sql`SELECT * FROM tasks WHERE user_id = ${user.id} ORDER BY created_at DESC`;
+  const tasks = await getTasksForUser(user.id);
   return NextResponse.json({ ok: true, tasks });
 }
 
@@ -31,7 +31,16 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  // 3. Validate priority
+
+  // 3. Validate description
+  if (description && typeof description !== "string") {
+    return NextResponse.json(
+      { ok: false, error: "Description must be text" },
+      { status: 400 },
+    );
+  }
+
+  // 4. Validate priority
   const ALLOWED_PRIORITIES = ["low", "medium", "high"];
   if (priority !== undefined && !ALLOWED_PRIORITIES.includes(priority)) {
     return NextResponse.json(
@@ -39,11 +48,13 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  // 4. Insert — past every guard, so any failure here is the server's fault → 500
+  const cleanTitle = title.trim();
+  const cleanDescription = description?.trim() || null;
+  // 5. Insert — past every guard, so any failure here is the server's fault → 500
   try {
     const [task] = await sql`
     INSERT INTO tasks (user_id, title, description, priority)
-    VALUES (${user.id}, ${title}, ${description}, ${priority || "medium"})
+    VALUES (${user.id}, ${cleanTitle}, ${cleanDescription}, ${priority || "medium"})
     RETURNING *
   `;
     return NextResponse.json({ ok: true, task }, { status: 201 });
